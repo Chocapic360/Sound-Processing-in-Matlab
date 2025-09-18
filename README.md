@@ -1,2 +1,4 @@
-# Soud Processing in Matlab
+# Sound Processing in Matlab
 Implement sound processing in Matlab through the creation of simple tones and composite signals.
+
+
