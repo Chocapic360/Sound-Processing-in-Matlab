@@ -13,3 +13,18 @@ for j = 1:length(Basefrequencies)
 end
 
 % Transform frequencies into waveforms
+sample_rate = 44100;
+duration = 0.5;
+t = 0:1/sample_rate:duration;
+
+for j = 1:length(Basefrequencies)
+    for i = 1:8
+    waveform = frequency_to_waveform(FrequencyTable(i,j), t);
+        sound(waveform, sample_rate);
+        pause(duration + 0.1)
+    end
+end
+
+function waveform = frequency_to_waveform(frequency, timearray)
+    waveform = sin(2 * pi * frequency * timearray);
+end
