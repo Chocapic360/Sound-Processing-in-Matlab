@@ -18,9 +18,6 @@ This project explores how sound can be digitally created and manipulated as 1D s
 - Playing songs like *Twinkle, Twinkle, Little Star*
 - Frequency analysis with the **FFT**
 
-Based on the assignment specification from the course project document.  
-<sup>Source: *Sounds and Sound Processing Project*, pp. 1–9</sup> :contentReference[oaicite:0]{index=0}
-
 ---
 
 ## ✅ Features
