@@ -10,15 +10,13 @@ notes = dictionary('C',261.6,'C#',277.2,'D',293.7,'D#',311.1,'E',329.6,...
 sequence1 = [notes('D'), notes('E'), notes('C'), notes('C')/2, notes('G')];
 t_signal1 = 0:1/sample_rate:duration*length(sequence1);
 
-longwave = 0;
+wave = 0;
 for i = 1:length(sequence1)
-    wave = frequency_to_waveform(sequence1(i), t);
-    wave(1) = [];
-    longwave = [longwave, wave];
+    wave = wave + frequency_to_waveform(sequence1(i), t);
 end
 
-plot(t_signal1, longwave);
-sound(longwave, sample_rate);
+plot(t_signal1, wave);
+sound(wave, sample_rate);
 
 function waveform = frequency_to_waveform(frequency, timearray)
     waveform = sin(2 * pi * frequency * timearray);
