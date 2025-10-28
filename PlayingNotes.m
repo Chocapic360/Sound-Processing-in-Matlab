@@ -17,7 +17,27 @@ for i = 1:length(sequence1)
     longwave = [longwave, wave];
 end
 
+hold on;
+subplot(2,1,1);
 plot(t_signal1, longwave);
+title("signal");
+
+%Frequency analysis
+N = length(longwave);          % samples in your signal
+Y = fft(longwave);             % FFT
+P2 = abs(Y / N);               % two-sided spectrum (normalize)
+P1 = P2(1:N/2+1);              % one-sided spectrum
+P1(2:end-1) = 2*P1(2:end-1);   % energy from negative freqs
+
+f = sample_rate * (0:(N/2)) / N;   % <-- x-axis in Hz
+
+subplot(2,1,2);
+plot(f, P1);
+title("Frequency Spectrum");
+xlabel("Frequency (Hz)");
+ylabel("|Amplitude|");
+xlim([0 600]);
+
 sound(longwave, sample_rate);
 
 function waveform = frequency_to_waveform(frequency, timearray)
