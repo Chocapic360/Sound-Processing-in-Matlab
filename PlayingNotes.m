@@ -20,7 +20,7 @@ end
 hold on;
 subplot(2,1,1);
 plot(t_signal1, longwave);
-title("signal");
+title("Signal");
 
 %Frequency analysis
 N = length(longwave);          % samples in your signal
