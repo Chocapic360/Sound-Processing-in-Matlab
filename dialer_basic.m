@@ -1,9 +1,11 @@
 clc, clear
 clear sound
-% Dictionary for tones
-    
-% Phone number
+
+% Phone number to plot
 phoneNumber = '1234567890';
+
+% Single digit to plot
+digit = '1';
 
 % Settings
 fs = 8000;
@@ -13,6 +15,8 @@ interDigitGap = 0.05;
 % Use our function to generate time-separated sequence of tones
 audioArray = generateAudioArray(phoneNumber,fs,toneDuration,interDigitGap);
 
+% Generate single tone
+tone = generateSingleTone('8',fs,toneDuration,interDigitGap);
 
 function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, interDigitGap)
     numberFrequencies = containers.Map(...
@@ -60,7 +64,29 @@ function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, inter
     end
 end
 
-% Plot time domain
+function singleTone = generateSingleTone(digit, fs, toneDuration, interDigitGap)
+    numberFrequencies = containers.Map(...
+        {'1','2','3','4','5','6','7','8','9','0','*','#'}, ...
+        {[697,1209], [697,1336], [697,1477], ...
+         [770,1209], [770,1336], [770,1477], ...
+         [852,1209], [852,1336], [852,1477], ...
+         [941,1336], [941,1209], [941,1477]});
+    
+    % Generate dial tone
+    singleTone = [];
+    if isKey(numberFrequencies, digit)
+        freqs = numberFrequencies(digit);
+        % Generate tone
+        t = 0:1/fs:toneDuration;
+        tone = sin(2*pi*freqs(1)*t) + sin(2*pi*freqs(2)*t);
+        tone = tone / max(abs(tone));
+        
+        % Add to sequence
+        singleTone = [singleTone, tone, zeros(1, round(interDigitGap*fs))];
+    end
+end
+
+% Plot phone call
 subplot(2,1,1);
 time = (0:length(audioArray)-1) / fs;
 plot(time, audioArray);
@@ -69,15 +95,13 @@ xlabel('Time (seconds)');
 ylabel('Amplitude');
 grid on;
 
-% Plot frequency domain (FFT)
+% Plot digit
 subplot(2,1,2);
-N = length(audioArray);
-f = (0:N-1) * (fs/N);
-fftSignal = abs(fft(audioArray));
-plot(f(1:round(N/2)), fftSignal(1:round(N/2)));
-title('Frequency Domain (FFT)');
-xlabel('Frequency (Hz)');
-ylabel('Magnitude');
+time2 = (0:length(tone)-1) / fs;
+plot(time2, tone);
+title(sprintf('Time Domain - Single Digit: %s', digit));
+xlabel('Time (seconds)');
+ylabel('Amplitude');
 grid on;
 
 % Play sound
