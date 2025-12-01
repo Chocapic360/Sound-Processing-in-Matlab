@@ -1,7 +1,7 @@
 clc, clear
 clear sound
 
-% Phone number to plot
+% Phone number to plot (any number, 10 digits works fine)
 phoneNumber = '1234567890';
 
 % Single digit to plot
@@ -16,7 +16,7 @@ interDigitGap = 0.05;
 audioArray = generateAudioArray(phoneNumber,fs,toneDuration,interDigitGap);
 
 % Generate single tone
-tone = generateSingleTone('8',fs,toneDuration,interDigitGap);
+tone = generateAudioArray(digit,fs,toneDuration,interDigitGap);
 
 % Function that generates the phone number array
 function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, interDigitGap)
@@ -45,31 +45,6 @@ function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, inter
     end
 end
 
-% Function that generates one tone
-function singleTone = generateSingleTone(digit, fs, toneDuration, interDigitGap)
-
-
-    numberFrequencies = containers.Map(...
-        {'1','2','3','4','5','6','7','8','9','0','*','#'}, ...
-        {[697,1209], [697,1336], [697,1477], ...
-         [770,1209], [770,1336], [770,1477], ...
-         [852,1209], [852,1336], [852,1477], ...
-         [941,1336], [941,1209], [941,1477]});
-    
-    % Generate dial tone
-    singleTone = [];
-    if isKey(numberFrequencies, digit)
-        freqs = numberFrequencies(digit);
-        % Generate tone
-        t = 0:1/fs:toneDuration;
-        tone = sin(2*pi*freqs(1)*t) + sin(2*pi*freqs(2)*t);
-        tone = tone / max(abs(tone));
-        
-        % Add to sequence
-        singleTone = [singleTone, tone, zeros(1, round(interDigitGap*fs))];
-    end
-end
-
 % Add ringing tone
 ringOnTime = 0:1/fs:2;
 ringTone = sin(2*pi*350*ringOnTime) + sin(2*pi*440*ringOnTime);
@@ -92,8 +67,8 @@ end
 
 % Plot phone call
 subplot(3,1,1);
-time = (0:length(phoneCallArray)-1) / fs;
-plot(time, phoneCallArray);
+time0 = (0:length(phoneCallArray)-1) / fs;
+plot(time0, phoneCallArray);
 title(sprintf('Time Domain - Phone Call: %s', phoneNumber));
 xlabel('Time (seconds)');
 ylabel('Amplitude');
@@ -101,8 +76,8 @@ grid on;
 
 % Plot phone number
 subplot(3,1,2);
-time = (0:length(audioArray)-1) / fs;
-plot(time, audioArray);
+time1 = (0:length(audioArray)-1) / fs;
+plot(time1, audioArray);
 title(sprintf('Time Domain - Phone Number: %s', phoneNumber));
 xlabel('Time (seconds)');
 ylabel('Amplitude');
@@ -118,4 +93,12 @@ ylabel('Amplitude');
 grid on;
 
 % Play sound
+disp('Now playing full phone call');
 sound(phoneCallArray, fs);
+pause((length(phoneCallArray)-1) / fs + 1);
+disp('Now playing phone number');
+sound(audioArray, fs);
+pause((length(audioArray)-1) / fs + 1);
+disp('Now playing single tone');
+sound(tone, fs);
+
