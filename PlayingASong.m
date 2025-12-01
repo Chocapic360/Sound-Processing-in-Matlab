@@ -52,10 +52,59 @@ for i = 1:length(notes_treble)
     longwave_treble = [longwave_treble, wave];
 end
 
-player = audioplayer(longwave_treble, sample_rate);
+%player = audioplayer(longwave_treble, sample_rate);
+%play(player);
+%playblocking(player);
+
+% Tempo 4/4 at 200 BPM since a quarter is 1 beat and we have it as 0.25 duration we make bpm = 200/4 = 50
+bpm = 50;
+beats_per_second = bpm / 60;
+
+% Fur Elise - Treble Clef
+notes_fur_elise = { "E5","D#5","E5","D#5","E5","B4","D5","C5", ...
+                    "A4","C4","E4","A4","B4", ... % First Line
+                    "E4","G#4","B4","C5", ...
+                    "E4","E5","D#5","E5","D#5", ... % Second Line
+                    "E5","B4","D5","C5","A4", ...
+                    "C4","E4","A4","B4", ...
+                    "E4","C5","B4","A4", % Third Line
+                    };
+
+duration_note_fur_elise = {
+    0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, ...
+    0.5, 0.25, 0.25, 0.25, 0.5, ... % First Line
+    0.25, 0.25, 0.25, 0.5, ...
+    0.25, 0.25, 0.25, 0.25, 0.25, ... % Second Line
+    0.25, 0.25, 0.25, 0.25, 0.5, ...
+    0.25, 0.25, 0.25, 0.5, 0.25, ...
+    0.25, 0.25, 1.0 % Third Line
+    };
+
+% Generate Fur Elise waveform
+longwave_fur_elise = 0;
+for i = 1:length(notes_fur_elise)
+    note = notes_fur_elise{i};
+    duration = duration_note_fur_elise{i} / beats_per_second; % in seconds
+    t = 0:1/sample_rate:duration;
+    
+    if endsWith(note, "4")
+        note_name = extractBefore(note, strlength(note));
+        octave = 4;
+    elseif endsWith(note, "5")
+        note_name = extractBefore(note, strlength(note));
+        octave = 5;
+    end
+    
+    frequency = notes(note_name) * 2^(octave - 4);
+    wave = frequency_to_waveform(frequency, t);
+    wave = apply_adsr_envelope(wave, sample_rate, attack_time, decay_time, sustain_level, release_time);
+    wave(1) = []; % Remove the first sample to avoid overlap
+    longwave_fur_elise = [longwave_fur_elise, wave];
+end
+
+player = audioplayer(longwave_fur_elise, sample_rate);
 play(player);
 playblocking(player);
-
 
 function waveform = frequency_to_waveform(frequency, timearray)
     waveform = sin(2 * pi * frequency * timearray);
