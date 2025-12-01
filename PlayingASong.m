@@ -52,9 +52,9 @@ for i = 1:length(notes_treble)
     longwave_treble = [longwave_treble, wave];
 end
 
-%player = audioplayer(longwave_treble, sample_rate);
-%play(player);
-%playblocking(player);
+player = audioplayer(longwave_treble, sample_rate);
+play(player);
+playblocking(player);
 
 % Tempo 4/4 at 200 BPM since a quarter is 1 beat and we have it as 0.25 duration we make bpm = 200/4 = 50
 bpm = 50;
@@ -86,7 +86,7 @@ for i = 1:length(notes_fur_elise)
     note = notes_fur_elise{i};
     duration = duration_note_fur_elise{i} / beats_per_second; % in seconds
     t = 0:1/sample_rate:duration;
-    
+
     if endsWith(note, "4")
         note_name = extractBefore(note, strlength(note));
         octave = 4;
@@ -94,7 +94,7 @@ for i = 1:length(notes_fur_elise)
         note_name = extractBefore(note, strlength(note));
         octave = 5;
     end
-    
+
     frequency = notes(note_name) * 2^(octave - 4);
     wave = frequency_to_waveform(frequency, t);
     wave = apply_adsr_envelope(wave, sample_rate, attack_time, decay_time, sustain_level, release_time);
