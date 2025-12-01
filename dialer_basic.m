@@ -18,6 +18,7 @@ audioArray = generateAudioArray(phoneNumber,fs,toneDuration,interDigitGap);
 % Generate single tone
 tone = generateSingleTone('8',fs,toneDuration,interDigitGap);
 
+% Function that generates the phone number array
 function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, interDigitGap)
     numberFrequencies = containers.Map(...
         {'1','2','3','4','5','6','7','8','9','0','*','#'}, ...
@@ -42,29 +43,12 @@ function combinedAudio = generateAudioArray(phoneNumber, fs, toneDuration, inter
             combinedAudio = [combinedAudio, tone, zeros(1, round(interDigitGap*fs))];
         end
     end
-    
-    % Add ringing tone
-    ringOnTime = 0:1/fs:2;
-    ringTone = sin(2*pi*350*ringOnTime) + sin(2*pi*440*ringOnTime);
-    ringTone = ringTone / max(abs(ringTone));
-    ringSilence = zeros(1, round(4*fs));
-    
-    for i = 1:3 % Repeat ringing tone 3 times
-        combinedAudio = [combinedAudio, ringTone, ringSilence];
-    end
-    
-    % Add busy tone at end
-    busyOnTime = 0:1/fs:0.5;
-    busyTone = sin(2*pi*480*busyOnTime) + sin(2*pi*620*busyOnTime);
-    busyTone = busyTone / max(abs(busyTone));
-    busySilence = zeros(1, round(0.5*fs));
-    
-    for i = 1:4 % Repeat busy tone 4 times
-        combinedAudio = [combinedAudio, busyTone, busySilence];
-    end
 end
 
+% Function that generates one tone
 function singleTone = generateSingleTone(digit, fs, toneDuration, interDigitGap)
+
+
     numberFrequencies = containers.Map(...
         {'1','2','3','4','5','6','7','8','9','0','*','#'}, ...
         {[697,1209], [697,1336], [697,1477], ...
@@ -86,17 +70,46 @@ function singleTone = generateSingleTone(digit, fs, toneDuration, interDigitGap)
     end
 end
 
+% Add ringing tone
+ringOnTime = 0:1/fs:2;
+ringTone = sin(2*pi*350*ringOnTime) + sin(2*pi*440*ringOnTime);
+ringTone = ringTone / max(abs(ringTone));
+ringSilence = zeros(1, round(4*fs));
+phoneCallArray = audioArray;
+for i = 1:3 % Repeat ringing tone 3 times
+    phoneCallArray = [phoneCallArray, ringTone, ringSilence];
+end
+
+% Add busy tone at end
+busyOnTime = 0:1/fs:0.5;
+busyTone = sin(2*pi*480*busyOnTime) + sin(2*pi*620*busyOnTime);
+busyTone = busyTone / max(abs(busyTone));
+busySilence = zeros(1, round(0.5*fs));
+
+for i = 1:4 % Repeat busy tone 4 times
+    phoneCallArray = [phoneCallArray, busyTone, busySilence];
+end
+
 % Plot phone call
-subplot(2,1,1);
-time = (0:length(audioArray)-1) / fs;
-plot(time, audioArray);
+subplot(3,1,1);
+time = (0:length(phoneCallArray)-1) / fs;
+plot(time, phoneCallArray);
 title(sprintf('Time Domain - Phone Call: %s', phoneNumber));
 xlabel('Time (seconds)');
 ylabel('Amplitude');
 grid on;
 
+% Plot phone number
+subplot(3,1,2);
+time = (0:length(audioArray)-1) / fs;
+plot(time, audioArray);
+title(sprintf('Time Domain - Phone Number: %s', phoneNumber));
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+grid on;
+
 % Plot digit
-subplot(2,1,2);
+subplot(3,1,3);
 time2 = (0:length(tone)-1) / fs;
 plot(time2, tone);
 title(sprintf('Time Domain - Single Digit: %s', digit));
@@ -105,4 +118,4 @@ ylabel('Amplitude');
 grid on;
 
 % Play sound
-sound(audioArray, fs);
+sound(phoneCallArray, fs);
