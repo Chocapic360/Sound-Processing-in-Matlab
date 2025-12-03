@@ -1,8 +1,10 @@
+% Description - Plays a given telephone number as well as a single digit,
+% and plots them
 clc, clear
 clear sound
 
 % Phone number to plot (any number, 10 digits works fine)
-phoneNumber = '1234567890';
+phoneNumber = '8171234567';
 
 % Single digit to plot
 digit = '1';
